@@ -1,0 +1,1 @@
+CREATE INDEX "idx_task_author_created_id_desc" ON "task" USING btree ("author_id","created_at" DESC NULLS LAST,"id" DESC NULLS LAST);
