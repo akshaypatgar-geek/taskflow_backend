@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { createCategoryDTO } from '../dto/create.category.dto';
 import { CategoriesService } from '../service/categories.service';
 import { UsersService } from 'src/users/service/users.service';
@@ -44,4 +44,13 @@ export class CategoriesController {
         const {limit, cursor} = query;
         return this.categoriesService.getCategories(user.id, cursor, limit);
     }
+
+    @ApiBearerAuth()
+    @Get(':id')
+      async getCategoryById(
+        @Param('id', ParseUUIDPipe) id: string,
+        @CurrentUser() user: any
+      ) {
+        return this.categoriesService.getCategoryById( user.id, id);
+      }
 }

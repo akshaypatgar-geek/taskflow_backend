@@ -6,4 +6,5 @@ export declare class CategoriesService {
     constructor(repository: CategoriesRepository, userRepo: UsersRepository);
     create(userId: string, title: string): Promise<any>;
     getCategories(userId: string, cursor?: string, limit?: number): Promise<any>;
+    getCategoryById(userId: string, id: string): Promise<any>;
 }

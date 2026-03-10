@@ -1,20 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
 import { NotFoundException } from '@nestjs/common';
-import { UsersRepository } from 'src/users/repository/users.repository';
-import { CategoriesRepository } from 'src/categories/repository/categories.repository';
 import { TasksRepository } from '../repository/tasks.repository';
 import { taskPriorityEnum, taskStatusEnum } from 'src/db/schema';
+import { CategoriesRepository } from '../../categories/repository/categories.repository';
+import { UsersRepository } from '../../users/repository/users.repository';
 
 describe('TasksService', () => {
   let service: TasksService;
-  let usersRepo: jest.Mocked<UsersRepository>;
-  let categoriesRepo: jest.Mocked<CategoriesRepository>;
-  let tasksRepo: jest.Mocked<TasksRepository>;
+  let usersRepo: UsersRepository;
+  let categoriesRepo: CategoriesRepository;
+  let tasksRepo: TasksRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
+           providers: [
         TasksService,
         {
           provide: UsersRepository,
@@ -37,13 +37,13 @@ describe('TasksService', () => {
     }).compile();
 
     service = module.get<TasksService>(TasksService);
-    usersRepo = module.get(UsersRepository);
-    categoriesRepo = module.get(CategoriesRepository);
-    tasksRepo = module.get(TasksRepository);
+    usersRepo = module.get<UsersRepository>(UsersRepository);
+    categoriesRepo = module.get<CategoriesRepository>(CategoriesRepository);
+    tasksRepo = module.get<TasksRepository>(TasksRepository);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   // ================================
@@ -57,9 +57,9 @@ describe('TasksService', () => {
     };
 
     it('should create task successfully', async () => {
-      usersRepo.findById.mockResolvedValue({ id: 'user-1' } as any);
-      categoriesRepo.findById.mockResolvedValue({ id: 'cat-1' } as any);
-      tasksRepo.createTask.mockResolvedValue({ id: 'task-1', ...dto } as any);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue({ id: 'user-1' } as any);
+      jest.spyOn(categoriesRepo, 'findById').mockResolvedValue({ id: 'cat-1' } as any);
+      jest.spyOn(tasksRepo, 'createTask').mockResolvedValue({ id: 'task-1', ...dto } as any);
 
       const result = await service.createTask(dto, 'user-1');
 
@@ -70,20 +70,16 @@ describe('TasksService', () => {
     });
 
     it('should throw if user not found', async () => {
-      usersRepo.findById.mockResolvedValue(undefined);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue(undefined);
 
-      await expect(service.createTask(dto, 'user-1')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.createTask(dto, 'user-1')).rejects.toThrow(NotFoundException);
     });
 
     it('should throw if category not found', async () => {
-      usersRepo.findById.mockResolvedValue({ id: 'user-1' } as any);
-      categoriesRepo.findById.mockResolvedValue(null);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue({ id: 'user-1' } as any);
+      jest.spyOn(categoriesRepo, 'findById').mockResolvedValue(null);
 
-      await expect(service.createTask(dto, 'user-1')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.createTask(dto, 'user-1')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -92,8 +88,8 @@ describe('TasksService', () => {
   // ================================
   describe('findById', () => {
     it('should return task if found', async () => {
-      usersRepo.findById.mockResolvedValue({ id: 'user-1' } as any);
-      tasksRepo.findById.mockResolvedValue([{ id: 'task-1', title: 'Task 1' }] as any);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue({ id: 'user-1' } as any);
+      jest.spyOn(tasksRepo, 'findById').mockResolvedValue({ id: 'task-1', title: 'Task 1' } as any);
 
       const result = await service.findById('task-1', 'user-1');
 
@@ -101,20 +97,16 @@ describe('TasksService', () => {
     });
 
     it('should throw if task not found', async () => {
-      usersRepo.findById.mockResolvedValue({ id: 'user-1' } as any);
-      tasksRepo.findById.mockResolvedValue([]);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue({ id: 'user-1' } as any);
+      jest.spyOn(tasksRepo, 'findById').mockResolvedValue(null);
 
-      await expect(service.findById('task-1', 'user-1')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.findById('task-1', 'user-1')).rejects.toThrow(NotFoundException);
     });
 
     it('should throw if user not found', async () => {
-      usersRepo.findById.mockResolvedValue(undefined);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue(undefined);
 
-      await expect(service.findById('task-1', 'user-1')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.findById('task-1', 'user-1')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -123,21 +115,19 @@ describe('TasksService', () => {
   // ================================
   describe('findByAuthorId', () => {
     it('should return tasks for author', async () => {
-      usersRepo.findById.mockResolvedValue({ id: 'user-1' } as any);
-      tasksRepo.findByAuthorId.mockResolvedValue([{ id: 'task-1' }] as any);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue({ id: 'user-1' } as any);
+      jest.spyOn(tasksRepo, 'findByAuthorId').mockResolvedValue([{ id: 'task-1' }] as any);
 
       const result = await service.findByAuthorId('user-1');
 
-      expect(tasksRepo.findByAuthorId).toHaveBeenCalled();
+      expect(tasksRepo.findByAuthorId).toHaveBeenCalledWith('user-1');
       expect(result.length).toBe(1);
     });
 
     it('should throw if user not found', async () => {
-      usersRepo.findById.mockResolvedValue(undefined);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue(undefined);
 
-      await expect(service.findByAuthorId('user-1')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.findByAuthorId('user-1')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -146,53 +136,38 @@ describe('TasksService', () => {
   // ================================
   describe('updateTask', () => {
     it('should update task successfully', async () => {
-      usersRepo.findById.mockResolvedValue({ id: 'user-1' } as any);
-      tasksRepo.findById.mockResolvedValue({ id: 'task-1' } as any);
-      categoriesRepo.findById.mockResolvedValue({ id: 'cat-1' } as any);
-      tasksRepo.updateTask.mockResolvedValue({ id: 'task-1', status: 'DONE' } as any);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue({ id: 'user-1' } as any);
+      jest.spyOn(tasksRepo, 'findById').mockResolvedValue({ id: 'task-1' } as any);
+      jest.spyOn(categoriesRepo, 'findById').mockResolvedValue({ id: 'cat-1' } as any);
+      jest.spyOn(tasksRepo, 'updateTask').mockResolvedValue({ id: 'task-1', status: 'DONE' } as any);
 
-      const result = await service.updateTask(
-        'task-1',
-        'user-1',
-        'COMPLETED',
-        undefined,
-        'cat-1',
-      );
+      const result = await service.updateTask('task-1', 'user-1', 'COMPLETED', undefined, 'cat-1');
 
-      expect(tasksRepo.updateTask).toHaveBeenCalledWith(
-        'task-1',
-        'DONE',
-        undefined,
-        'cat-1',
-      );
+      expect(tasksRepo.updateTask).toHaveBeenCalledWith('task-1', 'DONE', undefined, 'cat-1');
       expect(result.status).toBe('DONE');
     });
 
     it('should throw if user not found', async () => {
-      usersRepo.findById.mockResolvedValue(undefined);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue(undefined);
 
-      await expect(service.updateTask('task-1', 'user-1')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.updateTask('task-1', 'user-1')).rejects.toThrow(NotFoundException);
     });
 
     it('should throw if task not found', async () => {
-      usersRepo.findById.mockResolvedValue({ id: 'user-1' } as any);
-      tasksRepo.findById.mockResolvedValue(null);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue({ id: 'user-1' } as any);
+      jest.spyOn(tasksRepo, 'findById').mockResolvedValue(null);
 
-      await expect(service.updateTask('task-1', 'user-1')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.updateTask('task-1', 'user-1')).rejects.toThrow(NotFoundException);
     });
 
     it('should throw if category not found', async () => {
-      usersRepo.findById.mockResolvedValue({ id: 'user-1' } as any);
-      tasksRepo.findById.mockResolvedValue({ id: 'task-1' } as any);
-      categoriesRepo.findById.mockResolvedValue(null);
+      jest.spyOn(usersRepo, 'findById').mockResolvedValue({ id: 'user-1' } as any);
+      jest.spyOn(tasksRepo, 'findById').mockResolvedValue({ id: 'task-1' } as any);
+      jest.spyOn(categoriesRepo, 'findById').mockResolvedValue(null);
 
-      await expect(
-        service.updateTask('task-1', 'user-1', undefined, undefined, 'cat-1'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.updateTask('task-1', 'user-1', undefined, undefined, 'cat-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

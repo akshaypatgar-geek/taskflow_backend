@@ -25,4 +25,13 @@ export class CategoriesService {
         if(!user) throw new NotFoundException("User not present in system");
         return await this.repository.getCategories(cursor, limit);
     }
+
+    async getCategoryById(userId: string, id:string) {
+        
+        const user = await this.userRepo.findById(userId);
+        if(!user) throw new NotFoundException("User not present in system");
+        const category = await this.repository.findById(id);
+        if(!category) throw new NotFoundException("Category doesnt exist");
+        return category;
+    }
 }

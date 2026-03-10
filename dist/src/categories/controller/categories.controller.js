@@ -38,6 +38,9 @@ let CategoriesController = class CategoriesController {
         const { limit, cursor } = query;
         return this.categoriesService.getCategories(user.id, cursor, limit);
     }
+    async getCategoryById(id, user) {
+        return this.categoriesService.getCategoryById(user.id, id);
+    }
 };
 exports.CategoriesController = CategoriesController;
 __decorate([
@@ -70,6 +73,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, get_categories_dto_1.GetCategoriesDTO]),
     __metadata("design:returntype", Promise)
 ], CategoriesController.prototype, "getCategories", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], CategoriesController.prototype, "getCategoryById", null);
 exports.CategoriesController = CategoriesController = __decorate([
     (0, common_1.Controller)('categories'),
     __metadata("design:paramtypes", [categories_service_1.CategoriesService, users_service_1.UsersService])

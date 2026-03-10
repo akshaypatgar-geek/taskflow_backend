@@ -36,6 +36,15 @@ let CategoriesService = class CategoriesService {
             throw new common_1.NotFoundException("User not present in system");
         return await this.repository.getCategories(cursor, limit);
     }
+    async getCategoryById(userId, id) {
+        const user = await this.userRepo.findById(userId);
+        if (!user)
+            throw new common_1.NotFoundException("User not present in system");
+        const category = await this.repository.findById(id);
+        if (!category)
+            throw new common_1.NotFoundException("Category doesnt exist");
+        return category;
+    }
 };
 exports.CategoriesService = CategoriesService;
 exports.CategoriesService = CategoriesService = __decorate([

@@ -8,4 +8,5 @@ export declare class CategoriesController {
     constructor(categoriesService: CategoriesService, userService: UsersService);
     createCategory(user: any, createCategoryDTO: createCategoryDTO): Promise<any>;
     getCategories(user: any, query: GetCategoriesDTO): Promise<any>;
+    getCategoryById(id: string, user: any): Promise<any>;
 }
