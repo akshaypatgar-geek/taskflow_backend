@@ -14,11 +14,17 @@ const api_property_decorator_1 = require("@nestjs/swagger/dist/decorators/api-pr
 const class_validator_1 = require("class-validator");
 const schema_1 = require("../../db/schema");
 class CreateTaskDto {
+    id;
     title;
     priority;
     categoryId;
 }
 exports.CreateTaskDto = CreateTaskDto;
+__decorate([
+    (0, api_property_decorator_1.ApiProperty)(),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], CreateTaskDto.prototype, "id", void 0);
 __decorate([
     (0, api_property_decorator_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),

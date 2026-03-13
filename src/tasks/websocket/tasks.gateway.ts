@@ -33,15 +33,16 @@ export class TasksGateway
   // Lifecycle hook - when client connects
  async handleConnection(client: Socket) {
   const token = client.handshake.auth?.token;
-    console.log("token", token)
+    
     if (!token) {
       throw new WsException('Invalid credentials');
     }
 
     // try {
       const payload = this.jwtService.verify(token);
-      console.log("payload", payload);
+     
       client.data.user = payload;
+      if(payload ==null) return new NotFoundException("Unauthorised user")
       const user = await this.userRepo.findById(payload.sub);
       if(!user) throw new NotFoundException("Unauthorised user")
         client.join(user.id);
@@ -63,17 +64,19 @@ export class TasksGateway
     @MessageBody() data: any,
     @ConnectedSocket() client: Socket,
   ) {
-    console.log('Received:', data);
+   
 
     return { event: 'pong', data: 'pong response' };
   }
 
   notifyTaskCreated(task: Task) {
+   
   this.server.to(task.authorId).emit('task.created', task);
 }
 
 // Broadcast when task is updated
 notifyTaskUpdated(task: Task) {
+ 
   this.server.to(task.authorId).emit('task.updated', task);
 }
 

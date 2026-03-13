@@ -51,6 +51,7 @@ describe('TasksService', () => {
   // ================================
   describe('createTask', () => {
     const dto = {
+      id: "task-1",
       title: 'Test Task',
       categoryId: 'cat-1',
       priority: taskPriorityEnum.enumValues[0],
@@ -59,7 +60,7 @@ describe('TasksService', () => {
     it('should create task successfully', async () => {
       jest.spyOn(usersRepo, 'findById').mockResolvedValue({ id: 'user-1' } as any);
       jest.spyOn(categoriesRepo, 'findById').mockResolvedValue({ id: 'cat-1' } as any);
-      jest.spyOn(tasksRepo, 'createTask').mockResolvedValue({ id: 'task-1', ...dto } as any);
+      jest.spyOn(tasksRepo, 'createTask').mockResolvedValue({...dto } as any);
 
       const result = await service.createTask(dto, 'user-1');
 

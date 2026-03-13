@@ -9,14 +9,14 @@ export class WsJwtGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const client = context.switchToWs().getClient();
     const token = client.handshake.auth?.token;
-    console.log("token", token)
+   
     if (!token) {
       throw new WsException('Invalid credentials');
     }
 
     try {
       const payload = this.jwtService.verify(token);
-      console.log("payload", payload);
+     
     client.data = client.data || {};
     client.data.user = payload;
 

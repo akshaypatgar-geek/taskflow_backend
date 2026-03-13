@@ -23,7 +23,6 @@ let UsersRepositoryImpl = class UsersRepositoryImpl {
                 return user;
             }
             catch (error) {
-                console.log("eror: caught", error.cause.code);
                 if (error.cause.code === '23505') {
                     throw new user_exists_exception_1.UserExistsException(`User with email ${email} already exists`);
                 }

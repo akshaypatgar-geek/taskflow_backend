@@ -36,7 +36,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: "Task Status" }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)(schema_1.taskStatusEnum.enumValues, { message: "Status can only be OPEN | IN_PROGRESS | CLOSED" }),
+    (0, class_validator_1.IsEnum)(schema_1.taskStatusEnum.enumValues, { message: "Status can only be OPEN | IN_PROGRESS | COMPLETED" }),
     __metadata("design:type", Object)
 ], updateTaskDTO.prototype, "status", void 0);
 __decorate([

@@ -12,11 +12,14 @@ export class TasksRepositoryImpl implements TasksRepository {
   
   async createTask(dto: CreateTaskDto, authorId:string): Promise<TaskMutationResponseDto> {
     return await db.transaction(async (trx) => {
-      const { title, priority, categoryId } = dto;
-
+      const {id, title, priority, categoryId } = dto;
+      const now = new Date();
     const [task] = await trx
       .insert(taskTable)
-      .values({ title, authorId, priority, categoryId })
+      .values({id, title, authorId, priority, categoryId,
+        createdAt: now,
+        updatedAt:now
+      })
       .returning();
 
     return {
@@ -32,12 +35,12 @@ export class TasksRepositoryImpl implements TasksRepository {
   }
 
   async findById(id: string,) {
-    console.log("id", id);
+    
     const [task] = await db
       .select()
       .from(taskTable)
       .where(eq(taskTable.id, id));
-      console.log("taks", task);
+     
     if (!task) {
       throw new NotFoundException(`Task with id ${id} not found`);
     }
@@ -122,8 +125,10 @@ export class TasksRepositoryImpl implements TasksRepository {
         priority?: (typeof taskPriorityEnum.enumValues)[number]
         status?: (typeof taskStatusEnum.enumValues)[number]
         categoryId?:string
+        updatedAt?:Date
       };
-      let updateInfo: TaskUpdateFields = {};
+      let updateInfo: TaskUpdateFields = {
+      };
     if(status) {
     if(task.status !== status) {
 updateInfo.status = status;
@@ -147,10 +152,17 @@ updateInfo.title = title;
       }
       
     }
-    
-    const [updatedTask] = (await trx.update(taskTable).set(updateInfo).where(eq(taskTable.id,id)).returning());
-    console.log("updated task", updatedTask);
-    return updatedTask;
+
+    let newTaskInfo;
+    if(Object.keys(updateInfo).length>0) {
+      updateInfo.updatedAt = new Date();
+      const [updatedTask] = (await trx.update(taskTable).set(updateInfo).where(eq(taskTable.id,id)).returning());
+   
+    newTaskInfo= updatedTask;
+    } else {
+      newTaskInfo = task;
+    }
+    return newTaskInfo;
     });
   }
 

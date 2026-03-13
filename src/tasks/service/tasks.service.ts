@@ -30,7 +30,8 @@ export class TasksService {
       const category = await this.categoryRepo.findById(categoryId);
       if (!category) throw new NotFoundException("Category not found");
     }
-    const task = this.repository.createTask(dto, authorId);
+    const task =await this.repository.createTask(dto, authorId);
+   
      this.gateway.notifyTaskCreated(task)
     return task;
   }

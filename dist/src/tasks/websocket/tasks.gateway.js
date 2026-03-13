@@ -29,13 +29,13 @@ let TasksGateway = class TasksGateway {
     server;
     async handleConnection(client) {
         const token = client.handshake.auth?.token;
-        console.log("token", token);
         if (!token) {
             throw new websockets_1.WsException('Invalid credentials');
         }
         const payload = this.jwtService.verify(token);
-        console.log("payload", payload);
         client.data.user = payload;
+        if (payload == null)
+            return new common_1.NotFoundException("Unauthorised user");
         const user = await this.userRepo.findById(payload.sub);
         if (!user)
             throw new common_1.NotFoundException("Unauthorised user");
@@ -45,7 +45,6 @@ let TasksGateway = class TasksGateway {
         console.log(`Client disconnected: ${client.id}`);
     }
     handlePing(data, client) {
-        console.log('Received:', data);
         return { event: 'pong', data: 'pong response' };
     }
     notifyTaskCreated(task) {

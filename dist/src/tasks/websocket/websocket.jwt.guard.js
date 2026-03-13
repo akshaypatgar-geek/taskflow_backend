@@ -21,13 +21,11 @@ let WsJwtGuard = class WsJwtGuard {
     canActivate(context) {
         const client = context.switchToWs().getClient();
         const token = client.handshake.auth?.token;
-        console.log("token", token);
         if (!token) {
             throw new websockets_1.WsException('Invalid credentials');
         }
         try {
             const payload = this.jwtService.verify(token);
-            console.log("payload", payload);
             client.data = client.data || {};
             client.data.user = payload;
             return true;

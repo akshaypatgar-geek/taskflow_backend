@@ -7,6 +7,11 @@ import { taskPriorityEnum } from 'src/db/schema';
 // export type TaskPriority = "LOW" | "MEDIUM" | "HIGH";
 
 export class CreateTaskDto {
+
+  @ApiProperty()
+  @IsUUID()
+  id: string;
+  
   @ApiProperty()
   @IsString()
   @MaxLength(50, { message: "Title can't be more than 50 characters" })

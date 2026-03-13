@@ -15,7 +15,7 @@ export class updateTaskDTO{
 
     @ApiPropertyOptional({description:"Task Status"})
     @IsOptional()
-    @IsEnum(taskStatusEnum.enumValues, {message:"Status can only be OPEN | IN_PROGRESS | CLOSED"})
+    @IsEnum(taskStatusEnum.enumValues, {message:"Status can only be OPEN | IN_PROGRESS | COMPLETED"})
     status: (typeof taskStatusEnum.enumValues)[number]
 
     @ApiPropertyOptional()

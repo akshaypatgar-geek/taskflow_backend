@@ -20,15 +20,6 @@ export declare class TasksRepositoryImpl implements TasksRepository {
         nextCursor: string | null;
         hasNextPage: boolean;
     }>;
-    updateTask(id: string, status?: (typeof taskStatusEnum.enumValues)[number], priority?: (typeof taskPriorityEnum.enumValues)[number], categoryId?: string, title?: string): Promise<{
-        id: string;
-        title: string;
-        createdAt: Date;
-        updatedAt: Date;
-        authorId: string;
-        priority: "LOW" | "MEDIUM" | "HIGH" | null;
-        categoryId: string | null;
-        status: "OPEN" | "IN_PROGRESS" | "COMPLETED";
-    }>;
+    updateTask(id: string, status?: (typeof taskStatusEnum.enumValues)[number], priority?: (typeof taskPriorityEnum.enumValues)[number], categoryId?: string, title?: string): Promise<any>;
     deleteTask(id: string): Promise<string | undefined>;
 }

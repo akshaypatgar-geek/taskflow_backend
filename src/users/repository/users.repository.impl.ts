@@ -18,7 +18,6 @@ export class UsersRepositoryImpl implements UsersRepository {
         .returning();
       return user;
       } catch(error:any) {
-         console.log("eror: caught", error.cause.code);
          if(error.cause.code === '23505') {
             throw new UserExistsException(`User with email ${email} already exists`)
          }

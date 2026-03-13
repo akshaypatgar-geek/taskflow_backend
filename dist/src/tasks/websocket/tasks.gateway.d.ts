@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -8,7 +9,7 @@ export declare class TasksGateway implements OnGatewayConnection, OnGatewayDisco
     private readonly userRepo;
     constructor(jwtService: JwtService, userRepo: UsersRepository);
     server: Server;
-    handleConnection(client: Socket): Promise<void>;
+    handleConnection(client: Socket): Promise<NotFoundException | undefined>;
     handleDisconnect(client: Socket): void;
     handlePing(data: any, client: Socket): {
         event: string;

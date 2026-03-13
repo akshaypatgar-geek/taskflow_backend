@@ -36,7 +36,7 @@ let TasksService = class TasksService {
             if (!category)
                 throw new common_1.NotFoundException("Category not found");
         }
-        const task = this.repository.createTask(dto, authorId);
+        const task = await this.repository.createTask(dto, authorId);
         this.gateway.notifyTaskCreated(task);
         return task;
     }

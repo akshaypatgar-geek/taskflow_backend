@@ -14,10 +14,14 @@ const drizzle_orm_1 = require("drizzle-orm");
 let TasksRepositoryImpl = class TasksRepositoryImpl {
     async createTask(dto, authorId) {
         return await db_module_1.db.transaction(async (trx) => {
-            const { title, priority, categoryId } = dto;
+            const { id, title, priority, categoryId } = dto;
+            const now = new Date();
             const [task] = await trx
                 .insert(schema_1.taskTable)
-                .values({ title, authorId, priority, categoryId })
+                .values({ id, title, authorId, priority, categoryId,
+                createdAt: now,
+                updatedAt: now
+            })
                 .returning();
             return {
                 id: task.id,
@@ -31,12 +35,10 @@ let TasksRepositoryImpl = class TasksRepositoryImpl {
         });
     }
     async findById(id) {
-        console.log("id", id);
         const [task] = await db_module_1.db
             .select()
             .from(schema_1.taskTable)
             .where((0, drizzle_orm_1.eq)(schema_1.taskTable.id, id));
-        console.log("taks", task);
         if (!task) {
             throw new common_1.NotFoundException(`Task with id ${id} not found`);
         }
@@ -95,9 +97,16 @@ let TasksRepositoryImpl = class TasksRepositoryImpl {
                     updateInfo.categoryId = categoryId;
                 }
             }
-            const [updatedTask] = (await trx.update(schema_1.taskTable).set(updateInfo).where((0, drizzle_orm_1.eq)(schema_1.taskTable.id, id)).returning());
-            console.log("updated task", updatedTask);
-            return updatedTask;
+            let newTaskInfo;
+            if (Object.keys(updateInfo).length > 0) {
+                updateInfo.updatedAt = new Date();
+                const [updatedTask] = (await trx.update(schema_1.taskTable).set(updateInfo).where((0, drizzle_orm_1.eq)(schema_1.taskTable.id, id)).returning());
+                newTaskInfo = updatedTask;
+            }
+            else {
+                newTaskInfo = task;
+            }
+            return newTaskInfo;
         });
     }
     async deleteTask(id) {

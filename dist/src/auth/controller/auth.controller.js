@@ -29,7 +29,6 @@ let AuthController = class AuthController {
     async login(loginDTO) {
         const { email, password } = loginDTO;
         const user = await this.authService.validateUser(email, password);
-        console.log("user validaation", user);
         return this.authService.login(user);
     }
     async refresh(req) {
