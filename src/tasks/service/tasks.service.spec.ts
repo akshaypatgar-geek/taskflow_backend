@@ -5,6 +5,7 @@ import { TasksRepository } from '../repository/tasks.repository';
 import { taskPriorityEnum, taskStatusEnum } from 'src/db/schema';
 import { CategoriesRepository } from '../../categories/repository/categories.repository';
 import { UsersRepository } from '../../users/repository/users.repository';
+import { TasksGateway } from '../websocket/tasks.gateway';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -33,6 +34,10 @@ describe('TasksService', () => {
             updateTask: jest.fn(),
           },
         },
+        {
+  provide: TasksGateway,
+  useValue: { sendToClient: jest.fn() },
+},
       ],
     }).compile();
 
@@ -140,12 +145,12 @@ describe('TasksService', () => {
       jest.spyOn(usersRepo, 'findById').mockResolvedValue({ id: 'user-1' } as any);
       jest.spyOn(tasksRepo, 'findById').mockResolvedValue({ id: 'task-1' } as any);
       jest.spyOn(categoriesRepo, 'findById').mockResolvedValue({ id: 'cat-1' } as any);
-      jest.spyOn(tasksRepo, 'updateTask').mockResolvedValue({ id: 'task-1', status: 'DONE' } as any);
+      jest.spyOn(tasksRepo, 'updateTask').mockResolvedValue({ id: 'task-1', status: 'COMPLETED' } as any);
 
       const result = await service.updateTask('task-1', 'user-1', 'COMPLETED', undefined, 'cat-1');
 
-      expect(tasksRepo.updateTask).toHaveBeenCalledWith('task-1', 'DONE', undefined, 'cat-1');
-      expect(result.status).toBe('DONE');
+      expect(tasksRepo.updateTask).toHaveBeenCalledWith('task-1', 'COMPLETED', undefined, 'cat-1');
+      expect(result.status).toBe('COMPLETED');
     });
 
     it('should throw if user not found', async () => {

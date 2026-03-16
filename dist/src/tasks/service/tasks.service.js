@@ -47,6 +47,9 @@ let TasksService = class TasksService {
         const task = await this.repository.findById(id);
         if (!task)
             throw new common_1.NotFoundException(`Task with id ${id} not found`);
+        if (task.authorId !== authorId) {
+            throw new common_1.ForbiddenException("User not allowed to view task");
+        }
         return task;
     }
     async findByAuthorId(authorId, priority, categoryId, cursor, limit = 10, searchKey, status, startDate, endDate, sortBy = 'date', sortOrder = 'desc') {
@@ -64,8 +67,11 @@ let TasksService = class TasksService {
         if (!task) {
             throw new common_1.NotFoundException("Task not found");
         }
+        if (task.authorId !== authorId) {
+            throw new common_1.ForbiddenException("User not allowed to delete task");
+        }
         if (categoryId) {
-            const category = this.categoryRepo.findById(categoryId);
+            const category = await this.categoryRepo.findById(categoryId);
             if (!category) {
                 throw new common_1.NotFoundException("Category not found");
             }
@@ -82,6 +88,9 @@ let TasksService = class TasksService {
         const task = await this.repository.findById(id);
         if (!task) {
             throw new common_1.NotFoundException("Task not found");
+        }
+        if (task.authorId !== authorId) {
+            throw new common_1.ForbiddenException("User not allowed to delete task");
         }
         const deleteId = await this.repository.deleteTask(id);
         this.gateway.notifyTaskDeleted(deleteId, authorId);

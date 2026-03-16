@@ -16,15 +16,19 @@ const tasks_repository_1 = require("./repository/tasks.repository");
 const tasks_repository_impl_1 = require("./repository/tasks.repository.impl");
 const tasks_gateway_1 = require("./websocket/tasks.gateway");
 const jwt_1 = require("@nestjs/jwt");
+const config_1 = require("@nestjs/config");
 let TasksModule = class TasksModule {
 };
 exports.TasksModule = TasksModule;
 exports.TasksModule = TasksModule = __decorate([
     (0, common_1.Module)({
         imports: [users_module_1.UsersModule, categories_module_1.CategoriesModule,
-            jwt_1.JwtModule.register({
-                secret: process.env.JWT_SECRET || 'secretKey',
-                signOptions: { expiresIn: '15m' },
+            jwt_1.JwtModule.registerAsync({
+                inject: [config_1.ConfigService],
+                useFactory: (configService) => ({
+                    secret: configService.get('JWT_SECRET'),
+                    signOptions: { expiresIn: '15m' },
+                }),
             }),
         ],
         controllers: [tasks_controller_1.TasksController],

@@ -1,13 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { UsersService } from 'src/users/service/users.service';
-import { db } from '../../db/db.module';
-import { eq, and } from 'drizzle-orm';
-import { taskTable, taskPriorityEnum, taskStatusEnum } from 'src/db/schema';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { taskPriorityEnum, taskStatusEnum } from 'src/db/schema';
 import { CreateTaskDto } from '../dto/create.task.dto';
 import { CategoriesRepository } from 'src/categories/repository/categories.repository';
 import { UsersRepository } from 'src/users/repository/users.repository';
 import { TasksRepository } from '../repository/tasks.repository';
-import { use } from 'passport';
 import { TasksGateway } from '../websocket/tasks.gateway';
 
 
@@ -42,6 +38,9 @@ export class TasksService {
 
     const task = await this.repository.findById(id);
     if (!task) throw new NotFoundException(`Task with id ${id} not found`);
+     if(task.authorId !== authorId) {
+      throw new ForbiddenException("User not allowed to view task");
+    }
     return task;
   }
 
@@ -69,8 +68,11 @@ export class TasksService {
     if(!task) {
       throw new NotFoundException("Task not found");
     }
+     if(task.authorId !== authorId) {
+      throw new ForbiddenException("User not allowed to delete task");
+    }
     if(categoryId) {
-      const category = this.categoryRepo.findById(categoryId);
+      const category = await this.categoryRepo.findById(categoryId);
       if(!category) {
         throw new NotFoundException("Category not found");
       }
@@ -88,6 +90,9 @@ export class TasksService {
     const task = await this.repository.findById(id);
     if(!task) {
       throw new NotFoundException("Task not found");
+    }
+    if(task.authorId !== authorId) {
+      throw new ForbiddenException("User not allowed to delete task");
     }
     const deleteId = await this.repository.deleteTask(id);
     this.gateway.notifyTaskDeleted(deleteId, authorId);

@@ -6,11 +6,18 @@ import { UsersModule } from './users/users.module';
 import { TasksModule } from './tasks/tasks.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ConfigModule } from '@nestjs/config';
+import * as Joi from 'joi';
+import { EnvConfigModule } from './config/env.config.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(
-      
+    EnvConfigModule,
+    ConfigModule.forRoot({
+      isGlobal:true,
+      validationSchema:Joi.object({
+        JWT_SECRET: Joi.string().required(),
+      }),
+    }
     ),
     AuthModule, UsersModule, TasksModule, CategoriesModule],
   controllers: [AppController],

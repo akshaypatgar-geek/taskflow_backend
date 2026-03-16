@@ -21,5 +21,5 @@ export declare class TasksRepositoryImpl implements TasksRepository {
         hasNextPage: boolean;
     }>;
     updateTask(id: string, status?: (typeof taskStatusEnum.enumValues)[number], priority?: (typeof taskPriorityEnum.enumValues)[number], categoryId?: string, title?: string): Promise<any>;
-    deleteTask(id: string): Promise<string | undefined>;
+    deleteTask(id: string): Promise<string>;
 }

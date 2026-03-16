@@ -167,14 +167,9 @@ updateInfo.title = title;
   }
 
   async deleteTask(id: string) {
-    try {
       return await db.transaction(async (trx) =>{
       await trx.delete(taskTable).where(eq(taskTable.id, id));
     return id;
     })
-    } catch(e) {
-      console.log("errro delete ", e);
-    }
-    
   }
 }

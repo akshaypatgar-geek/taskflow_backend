@@ -110,15 +110,10 @@ let TasksRepositoryImpl = class TasksRepositoryImpl {
         });
     }
     async deleteTask(id) {
-        try {
-            return await db_module_1.db.transaction(async (trx) => {
-                await trx.delete(schema_1.taskTable).where((0, drizzle_orm_1.eq)(schema_1.taskTable.id, id));
-                return id;
-            });
-        }
-        catch (e) {
-            console.log("errro delete ", e);
-        }
+        return await db_module_1.db.transaction(async (trx) => {
+            await trx.delete(schema_1.taskTable).where((0, drizzle_orm_1.eq)(schema_1.taskTable.id, id));
+            return id;
+        });
     }
 };
 exports.TasksRepositoryImpl = TasksRepositoryImpl;
