@@ -66,7 +66,8 @@ async function bootstrap() {
     app.useGlobalInterceptors(new logging_interceptor_1.LoggingInterceptor(), new all_response_validator_interceptor_1.AllResponseTransformInterceptor(reflector));
     app.useGlobalFilters(new all_exception_filter_1.AllExceptionsFilter());
     const configService = app.get(config_1.ConfigService);
-    await app.listen(configService.get('env.port') || 3000, '0.0.0.0');
+    const PORT = process.env.PORT || 3000;
+    await app.listen(PORT, '0.0.0.0');
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
