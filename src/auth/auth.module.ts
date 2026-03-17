@@ -18,12 +18,14 @@ import { ConfigService } from '@nestjs/config';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'), // no fallback
-        signOptions: { expiresIn: '15m' },
+        signOptions: { expiresIn: '50m' },
       }),
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy,
+  providers: [
+    AuthService,
+    JwtStrategy,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard, // 🔥 Makes it global
