@@ -29,12 +29,14 @@ exports.AuthModule = AuthModule = __decorate([
                 inject: [config_1.ConfigService],
                 useFactory: (configService) => ({
                     secret: configService.get('JWT_SECRET'),
-                    signOptions: { expiresIn: '3m' },
+                    signOptions: { expiresIn: '50m' },
                 }),
             }),
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy,
+        providers: [
+            auth_service_1.AuthService,
+            jwt_strategy_1.JwtStrategy,
             {
                 provide: core_1.APP_GUARD,
                 useClass: jwt_auth_guard_1.JwtAuthGuard,
