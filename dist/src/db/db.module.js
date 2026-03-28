@@ -40,6 +40,8 @@ exports.db = void 0;
 const postgres_js_1 = require("drizzle-orm/postgres-js");
 const schema = __importStar(require("./schema"));
 const postgres_1 = __importDefault(require("postgres"));
-const client = (0, postgres_1.default)(process.env.DATABASE_URL);
+const client = (0, postgres_1.default)(process.env.DATABASE_URL, {
+    ssl: { rejectUnauthorized: false },
+});
 exports.db = (0, postgres_js_1.drizzle)(client, { schema });
 //# sourceMappingURL=db.module.js.map

@@ -8,7 +8,6 @@ import {
   ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Task } from 'src/db/schema';
@@ -35,21 +34,33 @@ export class TasksGateway
   const token = client.handshake.auth?.token;
     
     if (!token) {
-      throw new WsException('Invalid credentials');
+      client.emit('error', { message: 'Invalid credentials' });
+      client.disconnect(true);
+      return;
     }
 
-    // try {
+    try {
       const payload = this.jwtService.verify(token);
      
       client.data.user = payload;
-      if(payload ==null) return new NotFoundException("Unauthorised user")
+      if (!payload) {
+        client.emit('error', { message: 'Invalid token' });
+        client.disconnect(true);
+        return;
+      }
       const user = await this.userRepo.findById(payload.sub);
-      if(!user) throw new NotFoundException("Unauthorised user")
+      if (!user) {
+        client.emit('error', { message: 'Unauthorised user' });
+        client.disconnect(true);
+        return;
+      }
         client.join(user.id);
     
-    // } catch (err) {
-    //   throw new WsException('Invalid token');
-    // }
+    } catch (err) {
+      client.emit('error', { message: 'Invalid token' });
+      client.disconnect(true);
+      return;
+    }
     
   }
 

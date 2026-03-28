@@ -30,16 +30,31 @@ let TasksGateway = class TasksGateway {
     async handleConnection(client) {
         const token = client.handshake.auth?.token;
         if (!token) {
-            throw new websockets_1.WsException('Invalid credentials');
+            client.emit('error', { message: 'Invalid credentials' });
+            client.disconnect(true);
+            return;
         }
-        const payload = this.jwtService.verify(token);
-        client.data.user = payload;
-        if (payload == null)
-            return new common_1.NotFoundException("Unauthorised user");
-        const user = await this.userRepo.findById(payload.sub);
-        if (!user)
-            throw new common_1.NotFoundException("Unauthorised user");
-        client.join(user.id);
+        try {
+            const payload = this.jwtService.verify(token);
+            client.data.user = payload;
+            if (!payload) {
+                client.emit('error', { message: 'Invalid token' });
+                client.disconnect(true);
+                return;
+            }
+            const user = await this.userRepo.findById(payload.sub);
+            if (!user) {
+                client.emit('error', { message: 'Unauthorised user' });
+                client.disconnect(true);
+                return;
+            }
+            client.join(user.id);
+        }
+        catch (err) {
+            client.emit('error', { message: 'Invalid token' });
+            client.disconnect(true);
+            return;
+        }
     }
     handleDisconnect(client) {
         console.log(`Client disconnected: ${client.id}`);
