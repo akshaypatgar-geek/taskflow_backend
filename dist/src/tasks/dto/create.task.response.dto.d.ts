@@ -1,4 +1,4 @@
-import { taskPriorityEnum } from "src/db/schema";
+import { taskPriorityEnum } from "../../db/schema";
 export declare class TaskMutationResponseDto {
     id: string;
     title: string;

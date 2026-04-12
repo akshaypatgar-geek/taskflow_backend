@@ -1,4 +1,4 @@
-import { SortByEnum, SortOrderEnum, taskPriorityEnum, taskStatusEnum } from "src/db/schema";
+import { SortByEnum, SortOrderEnum, taskPriorityEnum, taskStatusEnum } from "../../db/schema";
 export declare class GetTasksByAuthorDTO {
     limit?: number;
     cursor?: string;

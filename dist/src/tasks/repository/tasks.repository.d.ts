@@ -1,4 +1,4 @@
-import { taskPriorityEnum, taskStatusEnum } from "src/db/schema";
+import { taskPriorityEnum, taskStatusEnum } from "../../db/schema";
 export declare abstract class TasksRepository {
     abstract createTask(dto: any, authorId: string): any;
     abstract findById(id: string): any;

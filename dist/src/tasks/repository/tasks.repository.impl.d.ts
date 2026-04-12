@@ -1,4 +1,4 @@
-import { taskPriorityEnum, taskStatusEnum } from 'src/db/schema';
+import { taskPriorityEnum, taskStatusEnum } from "../../db/schema";
 import { CreateTaskDto } from '../dto/create.task.dto';
 import { TasksRepository } from './tasks.repository';
 import { TaskMutationResponseDto } from '../dto/create.task.response.dto';

@@ -30,7 +30,7 @@ let TasksGateway = class TasksGateway {
     async handleConnection(client) {
         const token = client.handshake.auth?.token;
         if (!token) {
-            client.emit('error', { message: 'Invalid credentials' });
+            client.emit('error', JSON.stringify({ message: 'Invalid credentials' }));
             client.disconnect(true);
             return;
         }
@@ -38,20 +38,20 @@ let TasksGateway = class TasksGateway {
             const payload = this.jwtService.verify(token);
             client.data.user = payload;
             if (!payload) {
-                client.emit('error', { message: 'Invalid token' });
+                client.emit('error', JSON.stringify({ message: 'Invalid token' }));
                 client.disconnect(true);
                 return;
             }
             const user = await this.userRepo.findById(payload.sub);
             if (!user) {
-                client.emit('error', { message: 'Unauthorised user' });
+                client.emit('error', JSON.stringify({ message: 'Unauthorised user' }));
                 client.disconnect(true);
                 return;
             }
             client.join(user.id);
         }
         catch (err) {
-            client.emit('error', { message: 'Invalid token' });
+            client.emit('error', JSON.stringify({ message: 'Invalid token' }));
             client.disconnect(true);
             return;
         }
@@ -63,13 +63,13 @@ let TasksGateway = class TasksGateway {
         return { event: 'pong', data: 'pong response' };
     }
     notifyTaskCreated(task) {
-        this.server.to(task.authorId).emit('task.created', task);
+        this.server.to(task.authorId).emit('task.created', JSON.stringify(task));
     }
     notifyTaskUpdated(task) {
-        this.server.to(task.authorId).emit('task.updated', task);
+        this.server.to(task.authorId).emit('task.updated', JSON.stringify(task));
     }
     notifyTaskDeleted(taskId, authorId) {
-        this.server.to(authorId).emit('task.deleted', { id: taskId });
+        this.server.to(authorId).emit('task.deleted', JSON.stringify({ id: taskId }));
     }
 };
 exports.TasksGateway = TasksGateway;

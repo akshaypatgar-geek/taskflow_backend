@@ -1,5 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
-import { UsersRepository } from 'src/users/repository/users.repository';
+import { UsersRepository } from "../../users/repository/users.repository";
 export declare class AuthService {
     private userRepo;
     private jwtService;

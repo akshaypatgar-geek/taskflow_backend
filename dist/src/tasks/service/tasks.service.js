@@ -15,16 +15,19 @@ const categories_repository_1 = require("../../categories/repository/categories.
 const users_repository_1 = require("../../users/repository/users.repository");
 const tasks_repository_1 = require("../repository/tasks.repository");
 const tasks_gateway_1 = require("../websocket/tasks.gateway");
+const firebase_service_1 = require("../../firebase/firebase.service");
 let TasksService = class TasksService {
     userRepo;
     categoryRepo;
     repository;
     gateway;
-    constructor(userRepo, categoryRepo, repository, gateway) {
+    firebaseService;
+    constructor(userRepo, categoryRepo, repository, gateway, firebaseService) {
         this.userRepo = userRepo;
         this.categoryRepo = categoryRepo;
         this.repository = repository;
         this.gateway = gateway;
+        this.firebaseService = firebaseService;
     }
     async createTask(dto, authorId) {
         const { categoryId } = dto;
@@ -38,6 +41,7 @@ let TasksService = class TasksService {
         }
         const task = await this.repository.createTask(dto, authorId);
         this.gateway.notifyTaskCreated(task);
+        await this.firebaseService.sendToTopic(authorId, 'Task Created', `A new task "${task.title}" has been created.`, { taskId: task.id });
         return task;
     }
     async findById(id, authorId) {
@@ -78,6 +82,7 @@ let TasksService = class TasksService {
         }
         const updatedTask = await this.repository.updateTask(id, status, priority, categoryId, title);
         this.gateway.notifyTaskUpdated(updatedTask);
+        await this.firebaseService.sendToTopic(authorId, 'Task Updated', `Task "${updatedTask.title}" has been updated.`, { taskId: updatedTask.id });
         return updatedTask;
     }
     async deleteTask(id, authorId) {
@@ -94,6 +99,7 @@ let TasksService = class TasksService {
         }
         const deleteId = await this.repository.deleteTask(id);
         this.gateway.notifyTaskDeleted(deleteId, authorId);
+        await this.firebaseService.sendToTopic(authorId, 'Task Deleted', `Task "${task.title}" has been deleted.`, { taskId: id });
         return { id: deleteId };
     }
 };
@@ -103,6 +109,7 @@ exports.TasksService = TasksService = __decorate([
     __metadata("design:paramtypes", [users_repository_1.UsersRepository,
         categories_repository_1.CategoriesRepository,
         tasks_repository_1.TasksRepository,
-        tasks_gateway_1.TasksGateway])
+        tasks_gateway_1.TasksGateway,
+        firebase_service_1.FirebaseService])
 ], TasksService);
 //# sourceMappingURL=tasks.service.js.map

@@ -1,5 +1,5 @@
 import { CategoriesRepository } from '../repository/categories.repository';
-import { UsersRepository } from 'src/users/repository/users.repository';
+import { UsersRepository } from "../../users/repository/users.repository";
 export declare class CategoriesService {
     private readonly repository;
     private readonly userRepo;

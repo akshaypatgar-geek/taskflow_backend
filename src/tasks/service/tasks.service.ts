@@ -5,6 +5,7 @@ import { CategoriesRepository } from 'src/categories/repository/categories.repos
 import { UsersRepository } from 'src/users/repository/users.repository';
 import { TasksRepository } from '../repository/tasks.repository';
 import { TasksGateway } from '../websocket/tasks.gateway';
+import { FirebaseService } from 'src/firebase/firebase.service';
 
 
 @Injectable()
@@ -13,7 +14,8 @@ export class TasksService {
     private readonly userRepo: UsersRepository,
     private readonly categoryRepo: CategoriesRepository,
     private readonly repository: TasksRepository,
-    private readonly gateway: TasksGateway
+    private readonly gateway: TasksGateway,
+    private readonly firebaseService: FirebaseService
   ) {}
 
   async createTask(dto: CreateTaskDto, authorId:string) {
@@ -29,6 +31,15 @@ export class TasksService {
     const task =await this.repository.createTask(dto, authorId);
    
      this.gateway.notifyTaskCreated(task)
+     
+     // Send Push Notification
+     await this.firebaseService.sendToTopic(
+       authorId,
+       'Task Created',
+       `A new task "${task.title}" has been created.`,
+       { taskId: task.id }
+     );
+
     return task;
   }
 
@@ -79,6 +90,15 @@ export class TasksService {
     }
     const updatedTask = await this.repository.updateTask(id, status, priority, categoryId , title);
     this.gateway.notifyTaskUpdated(updatedTask);
+
+    // Send Push Notification
+    await this.firebaseService.sendToTopic(
+      authorId,
+      'Task Updated',
+      `Task "${updatedTask.title}" has been updated.`,
+      { taskId: updatedTask.id }
+    );
+
     return updatedTask;
   }
 
@@ -96,6 +116,15 @@ export class TasksService {
     }
     const deleteId = await this.repository.deleteTask(id);
     this.gateway.notifyTaskDeleted(deleteId, authorId);
+
+    // Send Push Notification
+    await this.firebaseService.sendToTopic(
+      authorId,
+      'Task Deleted',
+      `Task "${task.title}" has been deleted.`,
+      { taskId: id }
+    );
+
     return { id: deleteId };
   }
 }

@@ -50,6 +50,7 @@ const categories_module_1 = require("./categories/categories.module");
 const config_1 = require("@nestjs/config");
 const Joi = __importStar(require("joi"));
 const env_config_module_1 = require("./config/env.config.module");
+const firebase_module_1 = require("./firebase/firebase.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -61,9 +62,12 @@ exports.AppModule = AppModule = __decorate([
                 isGlobal: true,
                 validationSchema: Joi.object({
                     JWT_SECRET: Joi.string().required(),
+                    FIREBASE_PROJECT_ID: Joi.string().required(),
+                    FIREBASE_CLIENT_EMAIL: Joi.string().required(),
+                    FIREBASE_PRIVATE_KEY: Joi.string().required(),
                 }),
             }),
-            auth_module_1.AuthModule, users_module_1.UsersModule, tasks_module_1.TasksModule, categories_module_1.CategoriesModule
+            auth_module_1.AuthModule, users_module_1.UsersModule, tasks_module_1.TasksModule, categories_module_1.CategoriesModule, firebase_module_1.FirebaseModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

@@ -8,6 +8,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { EnvConfigModule } from './config/env.config.module';
+import { FirebaseModule } from './firebase/firebase.module';
 
 @Module({
   imports: [
@@ -16,10 +17,13 @@ import { EnvConfigModule } from './config/env.config.module';
       isGlobal:true,
       validationSchema:Joi.object({
         JWT_SECRET: Joi.string().required(),
+        FIREBASE_PROJECT_ID: Joi.string().required(),
+        FIREBASE_CLIENT_EMAIL: Joi.string().required(),
+        FIREBASE_PRIVATE_KEY: Joi.string().required(),
       }),
     }
     ),
-    AuthModule, UsersModule, TasksModule, CategoriesModule],
+    AuthModule, UsersModule, TasksModule, CategoriesModule, FirebaseModule],
   controllers: [AppController],
   providers: [AppService],
 })

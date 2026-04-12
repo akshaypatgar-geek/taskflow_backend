@@ -27,14 +27,14 @@ export class TasksGateway
         private readonly userRepo: UsersRepository
     ) {}
   @WebSocketServer()
-  server: Server;
+  server!: Server;
 
   // Lifecycle hook - when client connects
  async handleConnection(client: Socket) {
   const token = client.handshake.auth?.token;
     
     if (!token) {
-      client.emit('error', { message: 'Invalid credentials' });
+      client.emit('error', JSON.stringify({ message: 'Invalid credentials' }));
       client.disconnect(true);
       return;
     }
@@ -44,20 +44,20 @@ export class TasksGateway
      
       client.data.user = payload;
       if (!payload) {
-        client.emit('error', { message: 'Invalid token' });
+        client.emit('error', JSON.stringify({ message: 'Invalid token' }));
         client.disconnect(true);
         return;
       }
       const user = await this.userRepo.findById(payload.sub);
       if (!user) {
-        client.emit('error', { message: 'Unauthorised user' });
+        client.emit('error', JSON.stringify({ message: 'Unauthorised user' }));
         client.disconnect(true);
         return;
       }
         client.join(user.id);
     
     } catch (err) {
-      client.emit('error', { message: 'Invalid token' });
+      client.emit('error', JSON.stringify({ message: 'Invalid token' }));
       client.disconnect(true);
       return;
     }
@@ -82,17 +82,17 @@ export class TasksGateway
 
   notifyTaskCreated(task: Task) {
    
-  this.server.to(task.authorId).emit('task.created', task);
+  this.server.to(task.authorId).emit('task.created', JSON.stringify(task));
 }
 
 // Broadcast when task is updated
 notifyTaskUpdated(task: Task) {
  
-  this.server.to(task.authorId).emit('task.updated', task);
+  this.server.to(task.authorId).emit('task.updated', JSON.stringify(task));
 }
 
 // Broadcast when task is deleted
 notifyTaskDeleted(taskId: string, authorId:string) {
-  this.server.to(authorId).emit('task.deleted', { id: taskId });
+  this.server.to(authorId).emit('task.deleted', JSON.stringify({ id: taskId }));
 }
 }

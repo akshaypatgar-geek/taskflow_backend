@@ -1,15 +1,17 @@
-import { taskPriorityEnum, taskStatusEnum } from 'src/db/schema';
+import { taskPriorityEnum, taskStatusEnum } from "../../db/schema";
 import { CreateTaskDto } from '../dto/create.task.dto';
-import { CategoriesRepository } from 'src/categories/repository/categories.repository';
-import { UsersRepository } from 'src/users/repository/users.repository';
+import { CategoriesRepository } from "../../categories/repository/categories.repository";
+import { UsersRepository } from "../../users/repository/users.repository";
 import { TasksRepository } from '../repository/tasks.repository';
 import { TasksGateway } from '../websocket/tasks.gateway';
+import { FirebaseService } from "../../firebase/firebase.service";
 export declare class TasksService {
     private readonly userRepo;
     private readonly categoryRepo;
     private readonly repository;
     private readonly gateway;
-    constructor(userRepo: UsersRepository, categoryRepo: CategoriesRepository, repository: TasksRepository, gateway: TasksGateway);
+    private readonly firebaseService;
+    constructor(userRepo: UsersRepository, categoryRepo: CategoriesRepository, repository: TasksRepository, gateway: TasksGateway, firebaseService: FirebaseService);
     createTask(dto: CreateTaskDto, authorId: string): Promise<any>;
     findById(id: string, authorId: string): Promise<any>;
     findByAuthorId(authorId: string, priority?: typeof taskPriorityEnum.arguments, categoryId?: string, cursor?: string, limit?: number, searchKey?: string, status?: typeof taskStatusEnum.arguments, startDate?: string, endDate?: string, sortBy?: 'date' | 'priority', sortOrder?: 'asc' | 'desc'): Promise<any>;

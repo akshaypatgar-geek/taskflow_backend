@@ -8,9 +8,10 @@ import { TasksRepositoryImpl } from './repository/tasks.repository.impl';
 import { TasksGateway } from './websocket/tasks.gateway';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { FirebaseModule } from 'src/firebase/firebase.module';
 
 @Module({
-  imports: [UsersModule, CategoriesModule,
+  imports: [UsersModule, CategoriesModule, FirebaseModule,
     JwtModule.registerAsync({
           inject: [ConfigService],
           useFactory: (configService: ConfigService) => ({

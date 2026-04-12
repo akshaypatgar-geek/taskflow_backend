@@ -17,12 +17,13 @@ const tasks_repository_impl_1 = require("./repository/tasks.repository.impl");
 const tasks_gateway_1 = require("./websocket/tasks.gateway");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
+const firebase_module_1 = require("../firebase/firebase.module");
 let TasksModule = class TasksModule {
 };
 exports.TasksModule = TasksModule;
 exports.TasksModule = TasksModule = __decorate([
     (0, common_1.Module)({
-        imports: [users_module_1.UsersModule, categories_module_1.CategoriesModule,
+        imports: [users_module_1.UsersModule, categories_module_1.CategoriesModule, firebase_module_1.FirebaseModule,
             jwt_1.JwtModule.registerAsync({
                 inject: [config_1.ConfigService],
                 useFactory: (configService) => ({

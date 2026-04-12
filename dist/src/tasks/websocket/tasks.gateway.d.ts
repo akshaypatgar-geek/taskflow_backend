@@ -1,8 +1,8 @@
 import { JwtService } from '@nestjs/jwt';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Task } from 'src/db/schema';
-import { UsersRepository } from 'src/users/repository/users.repository';
+import { Task } from "../../db/schema";
+import { UsersRepository } from "../../users/repository/users.repository";
 export declare class TasksGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly jwtService;
     private readonly userRepo;

@@ -1,7 +1,7 @@
 import { UsersService } from '../service/users.service';
 import { CreateUserDto } from '../dto/create.user.dto';
 import { UpdateUserDto } from '../dto/update.user.dto';
-import { FileUploadService } from 'src/common/file-upload/file-upload.service';
+import { FileUploadService } from "../../common/file-upload/file-upload.service";
 export declare class UsersController {
     private readonly usersService;
     private readonly fileUploadService;
